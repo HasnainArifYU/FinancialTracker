@@ -102,18 +102,29 @@ public class FinancialTracker {
         // The new deposit should be added to the `transactions` ArrayList.
             LocalDate date = null;
             LocalTime time = null;
-            try {
+            do {
+                // Get date
                 System.out.println("Please enter the date of the Deposit in the following format : yyyy-MM-dd ");
                 String dateString = scanner.nextLine().trim();
-                date = LocalDate.parse(dateString, DATE_FORMATTER);
 
-                System.out.println("Please enter the time of the Deposit in the following format : HH:mm:ss ");
-                String timeString = scanner.nextLine().trim();
-                time = LocalTime.parse(timeString, TIME_FORMATTER);
+                try {
+                    date = LocalDate.parse(dateString, DATE_FORMATTER);
+                } catch (DateTimeParseException e) {
+                    System.out.println("Invalid date format. Please enter in yyyy-MM-dd format: ");
+                }
 
-            } catch (DateTimeParseException e) {
-                System.out.println("The Date/Time are not in the correct format : ");
-            }
+                // Get time (only if date is valid)
+                if (date != null) {
+                    System.out.println("Please enter the time of the Deposit in the following format : HH:mm:ss ");
+                    String timeString = scanner.nextLine().trim();
+
+                    try {
+                        time = LocalTime.parse(timeString, TIME_FORMATTER);
+                    } catch (DateTimeParseException e) {
+                        System.out.println("Invalid time format. Please enter in HH:mm:ss format: ");
+                    }
+                }
+            } while (date == null || time == null);
 
             System.out.println("Please enter the purpose of your Deposit in a few words : ");
             String purpose = scanner.nextLine();
@@ -150,6 +161,56 @@ public class FinancialTracker {
         // The amount should be a positive number.
         // After validating the input, a new `Payment` object should be created with the entered values.
         // The new payment should be added to the `transactions` ArrayList.
+        LocalDate date = null;
+        LocalTime time = null;
+        do {
+            // Get date
+            System.out.println("Please enter the date of the Withdrawal in the following format : yyyy-MM-dd ");
+            String dateString = scanner.nextLine().trim();
+
+            try {
+                date = LocalDate.parse(dateString, DATE_FORMATTER);
+            } catch (DateTimeParseException e) {
+                System.out.println("Invalid date format. Please enter in yyyy-MM-dd format: ");
+            }
+
+            // Get time (only if date is valid)
+            if (date != null) {
+                System.out.println("Please enter the time of the Withdrawal in the following format : HH:mm:ss ");
+                String timeString = scanner.nextLine().trim();
+
+                try {
+                    time = LocalTime.parse(timeString, TIME_FORMATTER);
+                } catch (DateTimeParseException e) {
+                    System.out.println("Invalid time format. Please enter in HH:mm:ss format: ");
+                }
+            }
+        } while (date == null || time == null);
+
+        System.out.println("Please enter the purpose of your Withdrawal in a few words : ");
+        String purpose = scanner.nextLine();
+
+        System.out.println("Please enter the Name of Vendor : ");
+        String name = scanner.nextLine();
+
+        Double amount;
+        do {
+
+
+            System.out.println("Please enter the amount of Withdrawal : ");
+            amount = scanner.nextDouble();
+            if (amount > 0) {
+                amount = -amount;
+                transactions.add(new Transaction(date, time, purpose, name, amount));
+                System.out.println("========= WITHDRAWAL PROCESSED, THANK YOU! ==========\n");
+                scanner.nextLine();
+                break;
+            } else {
+                System.out.println("Please enter a positive number : ");
+            }
+
+        } while (true);
+        
     }
 
     private static void ledgerMenu(Scanner scanner) {
