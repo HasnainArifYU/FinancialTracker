@@ -5,6 +5,7 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.Scanner;
@@ -99,14 +100,49 @@ public class FinancialTracker {
         // The amount should be a positive number.
         // After validating the input, a new `Deposit` object should be created with the entered values.
         // The new deposit should be added to the `transactions` ArrayList.
-            
+            LocalDate date = null;
+            LocalTime time = null;
+            try {
+                System.out.println("Please enter the date of the Deposit in the following format : yyyy-MM-dd ");
+                String dateString = scanner.nextLine().trim();
+                date = LocalDate.parse(dateString, DATE_FORMATTER);
 
+                System.out.println("Please enter the time of the Deposit in the following format : HH:mm:ss ");
+                String timeString = scanner.nextLine().trim();
+                time = LocalTime.parse(timeString, TIME_FORMATTER);
 
+            } catch (DateTimeParseException e) {
+                System.out.println("The Date/Time are not in the correct format : ");
+            }
 
+            System.out.println("Please enter the purpose of your Deposit in a few words : ");
+            String purpose = scanner.nextLine();
 
+            System.out.println("Please enter the Name of Vendor : ");
+            String name = scanner.nextLine();
 
+            Double amount;
 
-    }
+            while (true) {
+                System.out.print("Finally, please enter the Amount of Deposit : ");
+                if (scanner.hasNextDouble()) { // This checks for any double input, including integers
+                    amount = scanner.nextDouble(); // This reads the input as a double, converting integers to double automatically
+                    if (amount > 0) {
+                        transactions.add(new Transaction(date, time, purpose, name, amount));
+                        System.out.println("=======THANK YOU! DEPOSIT COMPLETE.=======\n");
+
+                        scanner.nextLine();
+                        break; // Break the loop if the number is positive
+                    } else {
+                        System.out.println("The number is not positive. Please enter a positive number.");
+                    }
+                } else {
+                    System.out.println("That's not a valid number. Please enter a number.");
+                    scanner.next(); // This consumes the incorrect input
+                }
+            }
+        }
+
 
     private static void addPayment(Scanner scanner) {
         // This method should prompt the user to enter the date, time, vendor, and amount of a payment.
