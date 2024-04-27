@@ -210,7 +210,7 @@ public class FinancialTracker {
             }
 
         } while (true);
-        
+
     }
 
     private static void ledgerMenu(Scanner scanner) {
@@ -251,17 +251,30 @@ public class FinancialTracker {
     private static void displayLedger() {
         // This method should display a table of all transactions in the `transactions` ArrayList.
         // The table should have columns for date, time, vendor, type, and amount.
-
+        for (Transaction transac: transactions){
+            System.out.println(""+transac.getDate()+transac.getTime()+transac.getDescription()+transac.getVendor()+transac.getAmount());
+        }
     }
 
     private static void displayDeposits() {
         // This method should display a table of all deposits in the `transactions` ArrayList.
         // The table should have columns for date, time, vendor, and amount.
+
+        for (Transaction transac : transactions) {
+            if (transac.getAmount() > 0) {
+                System.out.println("" + transac.getDate() + transac.getTime() + transac.getDescription() + transac.getVendor() + transac.getAmount());
+            }
+        }
     }
 
     private static void displayPayments() {
         // This method should display a table of all payments in the `transactions` ArrayList.
         // The table should have columns for date, time, vendor, and amount.
+        for (Transaction transac : transactions) {
+            if (transac.getAmount() < 0) {
+                System.out.println("" + transac.getDate() + transac.getTime() + transac.getDescription() + transac.getVendor() + transac.getAmount());
+            }
+        }
     }
 
     private static void reportsMenu(Scanner scanner) {
