@@ -251,37 +251,53 @@ public class FinancialTracker {
     }
 
     private static void displayLedger() {
-        // This method should display a table of all transactions in the `transactions` ArrayList.
-        // The table should have columns for date, time, vendor, type, and amount.
-        System.out.println("--- DATE --- | --- TIME --- | --- DESCRIPTION --- | --- VENDOR --- | --- AMOUNT --- |");
-        for (Transaction transac: transactions){
-            System.out.println("" + transac.getDate() + " | " +transac.getTime() +" | "+ transac.getDescription() +" | "+ transac.getVendor() +" | "+ transac.getAmount());
+        // Print the header with fixed column widths
+        System.out.printf("%-12s | %-8s | %-20s | %-15s | %-10s%n", "DATE", "TIME", "DESCRIPTION", "VENDOR", "AMOUNT");
+
+        // Print each transaction in the list
+        for (Transaction transac : transactions) {
+            System.out.printf("%-12s | %-8s | %-20s | %-15s | $%-10.2f%n",
+                    transac.getDate(),
+                    transac.getTime().toString(),
+                    transac.getDescription(),
+                    transac.getVendor(),
+                    transac.getAmount());
         }
     }
 
     private static void displayDeposits() {
-        // This method should display a table of all deposits in the `transactions` ArrayList.
-        // The table should have columns for date, time, vendor, and amount.
-        System.out.println("--- DATE --- | --- TIME --- | --- DESCRIPTION --- | --- VENDOR --- | --- AMOUNT --- |");
+        // Print the header with fixed column widths
+        System.out.printf("%-12s | %-8s | %-20s | %-15s | %-10s%n", "DATE", "TIME", "DESCRIPTION", "VENDOR", "AMOUNT");
+
+        // Iterate over the transactions to print only deposits
         for (Transaction transac : transactions) {
-            if (transac.getAmount() > 0) {
-                System.out.println("" + transac.getDate() + " | " +transac.getTime() +" | "+ transac.getDescription() +" | "+ transac.getVendor() +" | "+ transac.getAmount());
+            if (transac.getAmount() > 0) { // Check if the transaction is a deposit (amount > 0)
+                System.out.printf("%-12s | %-8s | %-20s | %-15s | $%-,10.2f%n",
+                        transac.getDate(),
+                        transac.getTime().toString(),
+                        transac.getDescription(),
+                        transac.getVendor(),
+                        transac.getAmount());
             }
         }
     }
 
     private static void displayPayments() {
-        // This method should display a table of all payments in the `transactions` ArrayList.
-        // The table should have columns for date, time, vendor, and amount.
-        System.out.println("--- DATE --- | --- TIME --- | --- DESCRIPTION --- | --- VENDOR --- | --- AMOUNT --- |");
-        for (Transaction transac : transactions) {
-            if (transac.getAmount() < 0) {
-                System.out.println("" + transac.getDate() + " | " +transac.getTime() +" | "+ transac.getDescription() +" | "+ transac.getVendor() +" | "+ transac.getAmount());
+        // Print the header with fixed column widths
+        System.out.printf("%-12s | %-8s | %-20s | %-15s | %-10s%n", "DATE", "TIME", "DESCRIPTION", "VENDOR", "AMOUNT");
 
+        // Iterate over the transactions to print only payments
+        for (Transaction transac : transactions) {
+            if (transac.getAmount() < 0) { // Check if the transaction is a payment (amount < 0)
+                System.out.printf("%-12s | %-8s | %-20s | %-15s | $%-,10.2f%n",
+                        transac.getDate(),
+                        transac.getTime().toString(),
+                        transac.getDescription(),
+                        transac.getVendor(),
+                        -transac.getAmount()); // Display the absolute value of the amount
             }
         }
     }
-
     private static void reportsMenu(Scanner scanner) {
         boolean running = true;
         while (running) {
