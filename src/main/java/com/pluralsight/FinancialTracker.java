@@ -1,13 +1,9 @@
 package com.pluralsight;
-import java.io.BufferedReader;
-import java.io.FileNotFoundException;
-import java.io.FileReader;
-import java.io.IOException;
+import java.io.*;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.Scanner;
 import java.time.*;
 
@@ -21,14 +17,15 @@ public class FinancialTracker {
     private static final DateTimeFormatter DATE_FORMATTER = DateTimeFormatter.ofPattern(DATE_FORMAT);
     private static final DateTimeFormatter TIME_FORMATTER = DateTimeFormatter.ofPattern(TIME_FORMAT);
 
-    public static void main(String[] args) {
+    public static void main(String[] args) throws IOException {
         loadTransactions(FILE_NAME);
         Scanner scanner = new Scanner(System.in);
         boolean running = true;
 
         while (running) {
-            System.out.println("Welcome to TransactionApp");
-            System.out.println("Choose an option:");
+            System.out.println("--- WELCOME TO THE TRANSACTION APP ---");
+            System.out.println("Please choose an option:");
+            System.out.println();
             System.out.println("D) Add Deposit");
             System.out.println("P) Make Payment (Debit)");
             System.out.println("L) Ledger");
@@ -72,7 +69,7 @@ public class FinancialTracker {
         try {
             BufferedReader reader = new BufferedReader(new FileReader(fileName));
             String line;
-            while ((line = reader.readLine()) != null) {
+            while (( line = reader.readLine()) != null) {
                 String[] data = line.split("\\|");
 
                 String dateString = data[0].trim();
@@ -94,7 +91,7 @@ public class FinancialTracker {
         }
     }
 
-        private static void addDeposit(Scanner scanner) {
+        private static void addDeposit(Scanner scanner) throws IOException {
         // This method should prompt the user to enter the date, time, vendor, and amount of a deposit.
         // The user should enter the date and time in the following format: yyyy-MM-dd HH:mm:ss
         // The amount should be a positive number.
@@ -132,18 +129,20 @@ public class FinancialTracker {
             System.out.println("Please enter the Name of Vendor : ");
             String name = scanner.nextLine();
 
-            Double amount;
+            BufferedWriter writer = new BufferedWriter(new FileWriter(FILE_NAME, true));
 
+            Double amount;
             while (true) {
                 System.out.print("Finally, please enter the Amount of Deposit : ");
                 if (scanner.hasNextDouble()) { // This checks for any double input, including integers
                     amount = scanner.nextDouble(); // This reads the input as a double, converting integers to double automatically
                     if (amount > 0) {
                         Transaction Deposit = new Transaction(date, time, purpose, name, amount);
+                        writer.write(date.toString()+"|"+time.toString()+"|"+purpose+"|"+name+"|"+amount);
                         transactions.add(Deposit);
                         System.out.println("=======THANK YOU! DEPOSIT COMPLETE.=======\n");
-
                         scanner.nextLine();
+                        writer.newLine();
                         break; // Break the loop if the number is positive
                     } else {
                         System.out.println("The number is not positive. Please enter a positive number.");
@@ -152,11 +151,11 @@ public class FinancialTracker {
                     System.out.println("That's not a valid number. Please enter a number.");
                     scanner.next(); // This consumes the incorrect input
                 }
-            }
+            } writer.close();
         }
 
 
-    private static void addPayment(Scanner scanner) {
+    private static void addPayment(Scanner scanner) throws IOException {
         // This method should prompt the user to enter the date, time, vendor, and amount of a payment.
         // The user should enter the date and time in the following format: yyyy-MM-dd HH:mm:ss
         // The amount should be a positive number.
@@ -193,6 +192,7 @@ public class FinancialTracker {
 
         System.out.println("Please enter the Name of Vendor : ");
         String name = scanner.nextLine();
+        BufferedWriter writer = new BufferedWriter(new FileWriter(FILE_NAME, true));
 
         Double amount;
         do {
@@ -203,15 +203,18 @@ public class FinancialTracker {
             if (amount > 0) {
                 amount = -amount;
                 Transaction Payment = (new Transaction(date, time, purpose, name, amount));
+                writer.write(date.toString()+"|"+time.toString()+"|"+purpose+"|"+name+"|"+amount);
                 transactions.add(Payment);
                 System.out.println("========= WITHDRAWAL PROCESSED, THANK YOU! ==========\n");
                 scanner.nextLine();
+                writer.newLine();
                 break;
             } else {
                 System.out.println("Please enter a positive number : ");
             }
 
         } while (true);
+        writer.close();
 
     }
 
@@ -220,7 +223,7 @@ public class FinancialTracker {
         while (running) {
             System.out.println("Ledger");
             System.out.println("Choose an option:");
-            System.out.println("A) A`ll");
+            System.out.println("A) All");
             System.out.println("D) Deposits");
             System.out.println("P) Payments");
             System.out.println("R) Reports");
@@ -244,7 +247,7 @@ public class FinancialTracker {
                 case "H":
                     running = false;
                 default:
-                    System.out.println("Invalid option");
+                    System.out.println("Returning to Home Page ");
                     break;
             }
         }
@@ -294,7 +297,7 @@ public class FinancialTracker {
                         transac.getTime().toString(),
                         transac.getDescription(),
                         transac.getVendor(),
-                        -transac.getAmount()); // Display the absolute value of the amount
+                        transac.getAmount()); // Display the absolute value of the amount
             }
         }
     }
@@ -363,11 +366,15 @@ public class FinancialTracker {
         // If no transactions fall within the date range, the method prints a message indicating that there are no results.
         System.out.println("Transactions from " + startDate + " to " + endDate);
         boolean found = false;
-        System.out.println("--- DATE --- | --- TIME --- | --- DESCRIPTION --- | --- VENDOR --- | --- AMOUNT --- |");
-        for (Transaction transaction : transactions) {
-            if (!transaction.getDate().isBefore(startDate) && !transaction.getDate().isAfter(endDate)) {
-                System.out.println("" + transaction.getDate() + " | " +transaction.getTime() +" | "+ transaction.getDescription() +" | "+ transaction.getVendor() +" | "+ transaction.getAmount());
-
+        System.out.printf("%-12s | %-8s | %-20s | %-15s | %-10s%n", "DATE", "TIME", "DESCRIPTION", "VENDOR", "AMOUNT");
+        for (Transaction transac : transactions) {
+            if (!transac.getDate().isBefore(startDate) && !transac.getDate().isAfter(endDate)) {
+                System.out.printf("%-12s | %-8s | %-20s | %-15s | $%-,10.2f%n",
+                        transac.getDate(),
+                        transac.getTime().toString(),
+                        transac.getDescription(),
+                        transac.getVendor(),
+                        transac.getAmount()); // Display the absolute value of the amount
                 found = true;
             }
         }
@@ -384,10 +391,17 @@ public class FinancialTracker {
         // Transactions with a matching vendor name are printed to the console.
         // If no transactions match the specified vendor name, the method prints a message indicating that there are no results.
         System.out.println("Transactions with vendor: " + vendor);
+        System.out.printf("%-12s | %-8s | %-20s | %-15s | %-10s%n", "DATE", "TIME", "DESCRIPTION", "VENDOR", "AMOUNT");
+
         boolean found = false;
-        for (Transaction transaction : transactions) {
-            if (transaction.getVendor().trim().equalsIgnoreCase(vendor)) {
-                System.out.println(transaction);
+        for (Transaction transac : transactions) {
+            if (transac.getVendor().trim().equalsIgnoreCase(vendor)) {
+                System.out.printf("%-12s | %-8s | %-20s | %-15s | $%-,10.2f%n",
+                        transac.getDate(),
+                        transac.getTime().toString(),
+                        transac.getDescription(),
+                        transac.getVendor(),
+                        transac.getAmount()); // Display the absolute value of the amount
                 found = true;
             }
         }
@@ -396,3 +410,4 @@ public class FinancialTracker {
         }
     }
 }
+
