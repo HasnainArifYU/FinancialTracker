@@ -17,7 +17,7 @@ public class FinancialTracker {
     private static final DateTimeFormatter DATE_FORMATTER = DateTimeFormatter.ofPattern(DATE_FORMAT);
     private static final DateTimeFormatter TIME_FORMATTER = DateTimeFormatter.ofPattern(TIME_FORMAT);
 
-    public static void main(String[] args) throws IOException {
+    public static void main(String[] args)  {
         loadTransactions(FILE_NAME);
         Scanner scanner = new Scanner(System.in);
         boolean running = true;
@@ -65,157 +65,178 @@ public class FinancialTracker {
         // For example: 2023-04-29,13:45:00,Amazon,PAYMENT,29.99
         // After reading all the transactions, the file should be closed.
         // If any errors occur, an appropriate error message should be displayed.
+            File file = new File(fileName);
 
-        try {
-            BufferedReader reader = new BufferedReader(new FileReader(fileName));
-            String line;
-            while (( line = reader.readLine()) != null) {
-                String[] data = line.split("\\|");
-
-                String dateString = data[0].trim();
-                LocalDate date = LocalDate.parse(dateString, DATE_FORMATTER);
-
-                String timeString = data[1].trim();
-                LocalTime time = LocalTime.parse(timeString, TIME_FORMATTER);
-
-                String description = data[2].trim();
-                String vendor = data[3].trim();
-                double price = Double.parseDouble(data[4]);
-
-                transactions.add(new Transaction(date, time, description, vendor, price));
-
-            }
-            reader.close();
-        } catch (Exception e) {
-
-        }
-    }
-
-        private static void addDeposit(Scanner scanner) throws IOException {
-        // This method should prompt the user to enter the date, time, vendor, and amount of a deposit.
-        // The user should enter the date and time in the following format: yyyy-MM-dd HH:mm:ss
-        // The amount should be a positive number.
-        // After validating the input, a new `Deposit` object should be created with the entered values.
-        // The new deposit should be added to the `transactions` ArrayList.
-            LocalDate date = null;
-            LocalTime time = null;
-            do {
-                // Get date
-                System.out.println("Please enter the date of the Deposit in the following format : yyyy-MM-dd ");
-                String dateString = scanner.nextLine().trim();
-
+            // Check if the file exists. If it does not, create it.
+            if (!file.exists()) {
                 try {
-                    date = LocalDate.parse(dateString, DATE_FORMATTER);
-                } catch (DateTimeParseException e) {
-                    System.out.println("Invalid date format. Please enter in yyyy-MM-dd format: ");
+                    file.createNewFile(); // This will create a new file if it does not exist
+                } catch (IOException e) {
+                    System.out.println("An error occurred while trying to create a new file: " + e.getMessage());
+                    return; // Exit the method if file creation fails
                 }
+            }
 
-                // Get time (only if date is valid)
-                if (date != null) {
-                    System.out.println("Please enter the time of the Deposit in the following format : HH:mm:ss ");
-                    String timeString = scanner.nextLine().trim();
-
-                    try {
-                        time = LocalTime.parse(timeString, TIME_FORMATTER);
-                    } catch (DateTimeParseException e) {
-                        System.out.println("Invalid time format. Please enter in HH:mm:ss format: ");
+            // Proceed to read from the file only if it exists or has been successfully created
+            try (BufferedReader reader = new BufferedReader(new FileReader(file))) {
+                String line;
+                while ((line = reader.readLine()) != null) {
+                    String[] data = line.split("\\|");
+                    if (data.length < 5) {
+                        continue; // Skip improperly formatted lines
                     }
+
+                    String dateString = data[0].trim(); // Convert String to Date format
+                    LocalDate date = LocalDate.parse(dateString, DATE_FORMATTER);
+
+                    String timeString = data[1].trim(); // Convert String to Time format
+                    LocalTime time = LocalTime.parse(timeString, TIME_FORMATTER);
+
+                    String description = data[2].trim();
+                    String vendor = data[3].trim();
+                    double price = Double.parseDouble(data[4]); // Convert String to Double format
+
+                    transactions.add(new Transaction(date, time, description, vendor, price));
                 }
-            } while (date == null || time == null);
-
-            System.out.println("Please enter the purpose of your Deposit in a few words : ");
-            String purpose = scanner.nextLine();
-
-            System.out.println("Please enter the Name of Vendor : ");
-            String name = scanner.nextLine();
-
-            BufferedWriter writer = new BufferedWriter(new FileWriter(FILE_NAME, true));
-
-            Double amount;
-            while (true) {
-                System.out.print("Finally, please enter the Amount of Deposit : ");
-                if (scanner.hasNextDouble()) { // This checks for any double input, including integers
-                    amount = scanner.nextDouble(); // This reads the input as a double, converting integers to double automatically
-                    if (amount > 0) {
-                        Transaction Deposit = new Transaction(date, time, purpose, name, amount);
-                        writer.write(date.toString()+"|"+time.toString()+"|"+purpose+"|"+name+"|"+amount);
-                        transactions.add(Deposit);
-                        System.out.println("=======THANK YOU! DEPOSIT COMPLETE.=======\n");
-                        scanner.nextLine();
-                        writer.newLine();
-                        break; // Break the loop if the number is positive
-                    } else {
-                        System.out.println("The number is not positive. Please enter a positive number.");
-                    }
-                } else {
-                    System.out.println("That's not a valid number. Please enter a number.");
-                    scanner.next(); // This consumes the incorrect input
-                }
-            } writer.close();
+            } catch (FileNotFoundException e) { //throws exceptions if file not found
+                System.out.println("The file was not found: " + e.getMessage());
+            } catch (IOException e) {
+                System.out.println("An error occurred while reading from the file: " + e.getMessage());
+            } catch (DateTimeParseException e) {
+                System.out.println("Error parsing date or time from the file: " + e.getMessage());
+            } catch (NumberFormatException e) {
+                System.out.println("Error parsing numeric values from the file: " + e.getMessage());
+            }
         }
 
-
-    private static void addPayment(Scanner scanner) throws IOException {
-        // This method should prompt the user to enter the date, time, vendor, and amount of a payment.
-        // The user should enter the date and time in the following format: yyyy-MM-dd HH:mm:ss
-        // The amount should be a positive number.
-        // After validating the input, a new `Payment` object should be created with the entered values.
-        // The new payment should be added to the `transactions` ArrayList.
+    private static void addDeposit(Scanner scanner) {
         LocalDate date = null;
         LocalTime time = null;
-        do {
-            // Get date
-            System.out.println("Please enter the date of the Withdrawal in the following format : yyyy-MM-dd ");
-            String dateString = scanner.nextLine().trim();
+        String dateString, timeString;
 
+        // Get date
+        while (date == null) {
+            System.out.println("Please enter the date of the Deposit in the following format: yyyy-MM-dd ");
+            dateString = scanner.nextLine().trim();
             try {
                 date = LocalDate.parse(dateString, DATE_FORMATTER);
             } catch (DateTimeParseException e) {
                 System.out.println("Invalid date format. Please enter in yyyy-MM-dd format: ");
             }
+        }
 
-            // Get time (only if date is valid)
-            if (date != null) {
-                System.out.println("Please enter the time of the Withdrawal in the following format : HH:mm:ss ");
-                String timeString = scanner.nextLine().trim();
-
-                try {
-                    time = LocalTime.parse(timeString, TIME_FORMATTER);
-                } catch (DateTimeParseException e) {
-                    System.out.println("Invalid time format. Please enter in HH:mm:ss format: ");
-                }
+        // Get time
+        while (time == null) {
+            System.out.println("Please enter the time of the Deposit in the following format: HH:mm:ss ");
+            timeString = scanner.nextLine().trim();
+            try {
+                time = LocalTime.parse(timeString, TIME_FORMATTER);
+            } catch (DateTimeParseException e) {
+                System.out.println("Invalid time format. Please enter in HH:mm:ss format: ");
             }
-        } while (date == null || time == null);
+        }
 
-        System.out.println("Please enter the purpose of your Withdrawal in a few words : ");
+        System.out.println("Please enter the purpose of your Deposit in a few words: ");
         String purpose = scanner.nextLine();
 
-        System.out.println("Please enter the Name of Vendor : ");
+        System.out.println("Please enter the Name of Vendor: ");
         String name = scanner.nextLine();
-        BufferedWriter writer = new BufferedWriter(new FileWriter(FILE_NAME, true));
 
-        Double amount;
-        do {
-
-
-            System.out.println("Please enter the amount of Withdrawal : ");
-            amount = scanner.nextDouble();
-            if (amount > 0) {
-                amount = -amount;
-                Transaction Payment = (new Transaction(date, time, purpose, name, amount));
-                writer.write(date.toString()+"|"+time.toString()+"|"+purpose+"|"+name+"|"+amount);
-                transactions.add(Payment);
-                System.out.println("========= WITHDRAWAL PROCESSED, THANK YOU! ==========\n");
-                scanner.nextLine();
-                writer.newLine();
-                break;
+        double amount = 0;
+        boolean validAmount = false;
+        while (!validAmount) {
+            System.out.print("Finally, please enter the Amount of Deposit: ");
+            if (scanner.hasNextDouble()) {
+                amount = scanner.nextDouble();
+                if (amount > 0) {
+                    validAmount = true;
+                } else {
+                    System.out.println("The number is not positive. Please enter a positive number.");
+                }
             } else {
-                System.out.println("Please enter a positive number : ");
+                System.out.println("That's not a valid number. Please enter a number.");
+                scanner.next(); // This consumes the incorrect input
             }
+        }
+        scanner.nextLine(); // consume the remaining newline
 
-        } while (true);
-        writer.close();
+        // Save the transaction
+        try (BufferedWriter writer = new BufferedWriter(new FileWriter(FILE_NAME, true))) {
+            String record = date.toString() + "|" + time.toString() + "|" + purpose + "|" + name + "|" + amount;
+            transactions.add(new Transaction(date, time, purpose, name, amount));
+            writer.write(record);
+            writer.newLine();
+            System.out.println("=======THANK YOU! DEPOSIT COMPLETE.=======");
+        } catch (IOException e) {
+            System.out.println("An error occurred while writing to the file.");
+        }
+    }
 
+    private static void addPayment(Scanner scanner) {
+        LocalDate date = null;
+        LocalTime time = null;
+        String dateString, timeString;
+
+        // Get date
+        while (date == null) {
+            System.out.println("Please enter the date of the Withdrawal in the following format: yyyy-MM-dd ");
+            dateString = scanner.nextLine().trim();
+            try {
+                date = LocalDate.parse(dateString, DATE_FORMATTER);
+            } catch (DateTimeParseException e) {
+                System.out.println("Invalid date format. Please enter in yyyy-MM-dd format: ");
+            }
+        }
+
+        // Get time
+        while (time == null) {
+            System.out.println("Please enter the time of the Withdrawal in the following format: HH:mm:ss ");
+            timeString = scanner.nextLine().trim();
+            try {
+                time = LocalTime.parse(timeString, TIME_FORMATTER);
+            } catch (DateTimeParseException e) {
+                System.out.println("Invalid time format. Please enter in HH:mm:ss format: ");
+            }
+        }
+
+        System.out.println("Please enter the purpose of your Withdrawal in a few words: ");
+        String purpose = scanner.nextLine();
+
+        System.out.println("Please enter the Name of Vendor: ");
+        String name = scanner.nextLine();
+
+        double amount = 0;
+        boolean validAmount = false;
+        while (!validAmount) {
+            System.out.println("Please enter the amount of Withdrawal: ");
+            if (scanner.hasNextDouble()) {
+                amount = scanner.nextDouble();
+                if (amount > 0) {
+                    validAmount = true;
+                } else {
+                    System.out.println("The number is not positive. Please enter a positive number.");
+                }
+            } else {
+                System.out.println("That's not a valid number. Please enter a number.");
+                scanner.next(); // This consumes the incorrect input
+            }
+        }
+        scanner.nextLine(); // consume the remaining newline
+
+        // Amount must be negative for withdrawals
+        amount = -amount;
+
+        // Save the transaction
+        try (BufferedWriter writer = new BufferedWriter(new FileWriter(FILE_NAME, true))) {
+            String record = date.toString() + "|" + time.toString() + "|" + purpose + "|" + name + "|" + amount;
+            transactions.add(new Transaction(date, time, purpose, name, amount));
+            writer.write(record);
+            writer.newLine();
+            System.out.println("========= WITHDRAWAL PROCESSED, THANK YOU! ==========");
+            System.out.println();
+        } catch (IOException e) {
+            System.out.println("An error occurred while writing to the file.");
+        }
     }
 
     private static void ledgerMenu(Scanner scanner) {
