@@ -68,7 +68,7 @@ List resources such as tutorials, articles, or documentation that helped you dur
 
 - **Husnain Arif** - Lead Developer
 
-## Thanks
+## Thank You
 
 Express gratitude towards those who provided help, guidance, or resources:
 
