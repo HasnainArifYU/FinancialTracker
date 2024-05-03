@@ -1,6 +1,6 @@
 # Financial Tracker
 
-## Description of the Project
+## Description
 
 The FinancialTracker application is a simple Java console application designed to help users manage financial transactions such as deposits and payments. It allows users to add transactions, view a ledger of past transactions, and generate reports based on date ranges or vendors.
 
