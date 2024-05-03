@@ -1,17 +1,31 @@
-# Project Title
+# Financial Tracker
 
-## Description of the Project
+## Description
 
-Briefly describe what this Java console application does. Mention its purpose and who the intended users are. Explain the main functionality and what problems it aims to solve.
+The FinancialTracker application is a simple Java console application designed to help users manage financial transactions such as deposits and payments. It allows users to add transactions, view a ledger of past transactions, and generate reports based on date ranges or vendors.
 
-![Class Diagram](path/to/your/class_diagram.png)
+
 
 ## User Stories
 
-List the user stories that guided the development of your application. Format these stories as: "As a [type of user], I want [some goal] so that [some reason]."
+As a user, I would like to add a deposit with a date, time, vendor, and amount so that I can accurately record incoming transactions.
 
-- As a user, I want to be able to input my data, so that the application can process it accordingly.
-- As a user, I want to receive immediate feedback, so I can understand what to do next.
+As a user, I want to make a payment with a date, time, vendor, and amount so that I can track money going out of my account accurately.
+
+As a user, I want to view a ledger of all transactions so that I can see a complete record of financial activities at any time.
+
+As a user, I want to filter transactions by date so that I can view all transactions within a specific time period.
+
+As a user, I want to filter transactions by vendor so that I can see all transactions associated with a particular vendor.
+
+As a user, I want the ability to exit the program easily so that I can ensure the application closes properly when I am done using it.
+
+As a user, I want to load transactions from a file when starting the app so that I can continue working with previously recorded data.
+
+As a user, I want to save new transactions to the same file so that my transaction history is preserved and updated continuously.
+
+As a user, I want to view a breakdown of deposits and payments separately so that I can quickly assess inflows and outflows in my financial records.
+
 
 ## Setup
 
@@ -27,44 +41,36 @@ Instructions on how to set up and run the project using IntelliJ IDEA.
 Follow these steps to get your application running within IntelliJ IDEA:
 
 1. Open IntelliJ IDEA.
-2. Select "Open" and navigate to the directory where you cloned or downloaded the project.
+2. Select "Open" and navigate to the directory where you cloned or downloaded the project. Choose the cloned directory (FinancialTracker) and click OK.
 3. After the project opens, wait for IntelliJ to index the files and set up the project.
 4. Find the main class with the `public static void main(String[] args)` method.
-5. Right-click on the file and select 'Run 'YourMainClassName.main()'' to start the application.
+5. Right-click on the file and select 'Run 'FinancialTracker.main()'' to start the application.
 
 ## Technologies Used
 
-- Java: Mention the version you are using.
-- Any additional libraries or frameworks used in the project.
+- intelliJ Idea 2024.1
+- Java: JDK 17 (Coretto)
 
 ## Demo
 
-Include screenshots or GIFs that show your application in action. Use tools like [Giphy Capture](https://giphy.com/apps/giphycapture) to record a GIF of your application.
+![gifFT](https://github.com/HasnainArifYU/FinancialTracker/assets/166551521/7006aca3-37f3-4acb-b1c3-b816f243365e)
 
-![Application Screenshot](path/to/your/screenshot.png)
 
-## Future Work
-
-Outline potential future enhancements or functionalities you might consider adding:
-
-- Additional feature to be developed.
-- Improvement of current functionalities.
 
 ## Resources
 
 List resources such as tutorials, articles, or documentation that helped you during the project.
 
-- [Java Programming Tutorial](https://www.example.com)
-- [Effective Java](https://www.example.com)
+- [Java Docs](https://docs.oracle.com/en/java/javase/17/docs/api/index.html)
+- [Youtube](https://www.youtube.com)
 
 ## Team Members
 
-- **Name 1** - Specific contributions or roles.
-- **Name 2** - Specific contributions or roles.
+- **Husnain Arif** - Lead Developer
 
-## Thanks
+## Thank You
 
 Express gratitude towards those who provided help, guidance, or resources:
 
-- Thank you to [Mentor's Name] for continuous support and guidance.
-- A special thanks to all teammates for their dedication and teamwork.
+- Thank you to [RaymondMaroun] for continuous support and guidance.
+- A special thanks to all teammates from Year Up App Dev cohort for their support and teamwork.
