@@ -9,13 +9,21 @@ The FinancialTracker application is a simple Java console application designed t
 ## User Stories
 
 As a user, I would like to add a deposit with a date, time, vendor, and amount so that I can accurately record incoming transactions.
+
 As a user, I want to make a payment with a date, time, vendor, and amount so that I can track money going out of my account accurately.
+
 As a user, I want to view a ledger of all transactions so that I can see a complete record of financial activities at any time.
+
 As a user, I want to filter transactions by date so that I can view all transactions within a specific time period.
+
 As a user, I want to filter transactions by vendor so that I can see all transactions associated with a particular vendor.
+
 As a user, I want the ability to exit the program easily so that I can ensure the application closes properly when I am done using it.
+
 As a user, I want to load transactions from a file when starting the app so that I can continue working with previously recorded data.
+
 As a user, I want to save new transactions to the same file so that my transaction history is preserved and updated continuously.
+
 As a user, I want to view a breakdown of deposits and payments separately so that I can quickly assess inflows and outflows in my financial records.
 
 
